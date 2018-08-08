@@ -255,7 +255,7 @@ void ShellSort(int A[], int n)
 //合并两个已排序好的数组
 void Mergy(int A[], int left, int mid, int right)
 {
-
+	int test;
 }
 
 int main()
