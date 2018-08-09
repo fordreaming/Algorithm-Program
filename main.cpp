@@ -255,7 +255,55 @@ void ShellSort(int A[], int n)
 //合并两个已排序好的数组
 void Mergy(int A[], int left, int mid, int right)
 {
-	int test;
+	//前置条件
+	//
+	cout << "mergy" <<endl;
+	cout << "left:  " << left <<"  mid:  " << mid << "  right:  " << right << endl;
+	int len = right - left + 1;
+	int i = left;//数组1的初始位置
+	int j = mid+1;//数组2的初始位置
+	//辅助空间len
+	int *temp = new int[len];
+	int index = 0;
+	//不变条件
+	//i <= mid && mid <j <= right
+	while (i <= mid && j <=right)
+	{
+		temp[index++] = A[i] < A[j]?A[i++]:A[j++];
+	}
+	while (i <= mid)
+	{
+		temp[index++] = A[i++];
+	}
+	while (j <= right)
+	{
+		temp[index++] = A[j++];
+	}
+	//数组复制到A中
+	int k;
+	for(k = 0; k < len; k++)
+	{
+		A[left++] = temp[k];
+	}
+}
+
+//递归实现归并排序
+//自顶向下
+void MergeSortRecursion(int A[], int left, int right)
+{
+	cout << "recursion" << endl;
+	cout << "left:  " << left << "  right  " << right << endl;
+	//递归开始回溯
+	if (left == right)
+	{
+		return;
+	}
+	//递归条件
+	int mid = (left + right)/2;
+	MergeSortRecursion(A, left, mid);
+	MergeSortRecursion(A, mid+1, right);
+	//合并
+	Mergy(A, left, mid, right);
 }
 
 int main()
@@ -271,5 +319,6 @@ int main()
 	/*BubbleSort_flag(A, length);*/
 	//InsertSort(A, length);
 	/*ShellSort(A, length);*/
+	MergeSortRecursion(A, 0, length-1);
 	return 0;
 }
