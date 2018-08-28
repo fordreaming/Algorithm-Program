@@ -1,3 +1,4 @@
+//#参考文章：https://www.cnblogs.com/eniac12/p/5329396.html及大话数据结构
 #include <iostream>
 using namespace std;
 
@@ -306,6 +307,92 @@ void MergeSortRecursion(int A[], int left, int right)
 	Mergy(A, left, mid, right);
 }
 
+
+void MergeSortIteration(int A[], int len)    // 非递归(迭代)实现的归并排序(自底向上)
+{
+	int left, mid, right;// 子数组索引,前一个为A[left...mid]，后一个子数组为A[mid+1...right]
+	for (int i = 1; i < len; i *= 2)        // 子数组的大小i初始为1，每轮翻倍
+	{
+		left = 0;
+		while (left + i < len)              // 后一个子数组存在(需要归并)
+		{
+			mid = left + i - 1;
+			right = mid + i < len ? mid + i : len - 1;// 后一个子数组大小可能不够
+			Mergy(A, left, mid, right);
+			left = right + 1;               // 前一个子数组索引向后移动
+		}
+	}
+}
+
+void Swap(int A[], int i, int j)
+{
+	int temp = A[i];
+	A[i] = A[j];
+	A[j] = temp;
+}
+
+void Heapify(int A[], int i, int size)  // 从A[i]向下进行堆调整
+{
+	int left_child = 2 * i + 1;         // 左孩子索引
+	int right_child = 2 * i + 2;        // 右孩子索引
+	int max = i;                        // 选出当前结点与其左右孩子三者之中的最大值
+	if (left_child < size && A[left_child] > A[max])
+		max = left_child;
+	if (right_child < size && A[right_child] > A[max])
+		max = right_child;
+	if (max != i)
+	{
+		Swap(A, i, max);                // 把当前结点和它的最大(直接)子节点进行交换
+		Heapify(A, max, size);          // 递归调用，继续从当前结点向下进行堆调整
+	}
+}
+
+int BuildHeap(int A[], int n)           // 建堆，时间复杂度O(n)
+{
+	int heap_size = n;
+	for (int i = heap_size / 2 - 1; i >= 0; i--) // 从每一个非叶结点开始向下进行堆调整
+		Heapify(A, i, heap_size);
+	return heap_size;
+}
+
+void HeapSort(int A[], int n)
+{
+	int heap_size = BuildHeap(A, n);    // 建立一个最大堆
+	while (heap_size > 1)   // 堆（无序区）元素个数大于1，未完成排序
+	{
+		// 将堆顶元素与堆的最后一个元素互换，并从堆中去掉最后一个元素
+		// 此处交换操作很有可能把后面元素的稳定性打乱，所以堆排序是不稳定的排序算法
+		Swap(A, 0, --heap_size);
+		Heapify(A, 0, heap_size);     // 从新的堆顶元素开始向下进行堆调整，时间复杂度O(logn)
+	}
+}
+
+
+int Partition(int A[], int left, int right)  // 划分函数
+{
+	int pivot = A[right];               // 这里每次都选择最后一个元素作为基准
+	int tail = left - 1;                // tail为小于基准的子数组最后一个元素的索引
+	for (int i = left; i < right; i++)  // 遍历基准以外的其他元素
+	{
+		if (A[i] <= pivot)              // 把小于等于基准的元素放到前一个子数组末尾
+		{
+			Swap(A, ++tail, i);
+		}
+	}
+	Swap(A, tail + 1, right);           // 最后把基准放到前一个子数组的后边，剩下的子数组既是大于基准的子数组
+	// 该操作很有可能把后面元素的稳定性打乱，所以快速排序是不稳定的排序算法
+	return tail + 1;                    // 返回基准的索引
+}
+
+void QuickSort(int A[], int left, int right)
+{
+	if (left >= right)
+		return;
+	int pivot_index = Partition(A, left, right); // 基准的索引
+	QuickSort(A, left, pivot_index - 1);
+	QuickSort(A, pivot_index + 1, right);
+}
+
 int main()
 {
 	int A[] = {3,2,4,1,5,7};
@@ -319,6 +406,9 @@ int main()
 	/*BubbleSort_flag(A, length);*/
 	//InsertSort(A, length);
 	/*ShellSort(A, length);*/
-	MergeSortRecursion(A, 0, length-1);
+	/*MergeSortRecursion(A, 0, length-1);*/
+	//MergeSortIteration(A, length);
+	/*HeapSort(A, length);*/
+	QuickSort(A, 0, length - 1);
 	return 0;
 }
